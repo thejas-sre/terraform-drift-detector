@@ -1,0 +1,21 @@
+{
+  "timestamp": "20250115_080000",
+  "environment": "dev",
+  "status": "drift_detected",
+  "drift_detected": true,
+  "changes": {
+    "to_change": [
+      "~ aws_instance.app — instance_type changed from t2.micro to t2.small (unauthorised manual change via AWS console)"
+    ],
+    "to_add": [],
+    "to_destroy": [],
+    "errors": []
+  },
+  "change_summary": {
+    "resources_to_add": 0,
+    "resources_to_change": 1,
+    "resources_to_destroy": 0,
+    "errors": 0
+  },
+  "note": "This is a sample report showing what a detected drift event looks like. An engineer manually changed the EC2 instance type via the AWS console without going through Terraform. This change was caught by the daily drift detection run before it could cause a deployment failure."
+}

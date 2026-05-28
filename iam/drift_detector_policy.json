@@ -1,0 +1,63 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TerraformStateReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::thejas-sre-terraform-state",
+        "arn:aws:s3:::thejas-sre-terraform-state/*"
+      ],
+      "Comment": "Read-only access to Terraform state files for plan comparison"
+    },
+    {
+      "Sid": "DriftReportWriteAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::thejas-sre-drift-reports-dev/*",
+        "arn:aws:s3:::thejas-sre-drift-reports-staging/*"
+      ],
+      "Comment": "Write-only access to drift report buckets — reports are immutable once written via Object Lock"
+    },
+    {
+      "Sid": "EC2ReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:Describe*"
+      ],
+      "Resource": "*",
+      "Comment": "Read-only EC2 access for terraform plan to compare current vs expected state"
+    },
+    {
+      "Sid": "VPCReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeInternetGateways",
+        "ec2:DescribeRouteTables"
+      ],
+      "Resource": "*",
+      "Comment": "Read-only VPC access for terraform plan"
+    },
+    {
+      "Sid": "IAMReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:GetPolicy",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy"
+      ],
+      "Resource": "*",
+      "Comment": "Read-only IAM access for terraform plan — no write permissions granted"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+name: Daily Terraform Drift Detection
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  detect-drift:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DRIFT_DETECTOR_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run drift detection
+        run: bash drift_detector/detect_drift.sh
+
+      - name: Upload drift reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drift-reports-${{ github.run_id }}
+          path: reports/
+
+      - name: Alert on drift detected
+        if: failure()
+        run: |
+          echo "DRIFT DETECTED — review reports artifact for details"
+          echo "Unauthorised infrastructure changes may have been made"
+          echo "Review and remediate before next deployment"
